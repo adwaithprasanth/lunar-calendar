@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #2d1b69 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 2px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .right-panel {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(5px);
+        }
+
+        .moon-display {
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .moon-icon {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            transition: transform 0.3s ease;
+        }
+
+        .moon-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .date-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .moon-phase-name {
+            font-size: 1.5rem;
+            color: #b0b0ff;
+            font-weight: 500;
+            margin-top: 20px;
+            text-shadow: 0 2px 10px rgba(176, 176, 255, 0.3);
+        }
+
+        .illumination {
+            font-size: 1.1rem;
+            color: #cccccc;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .next-10-days {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .next-days-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            justify-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #b0b0ff;
+            margin: 20px 0 15px 0;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-item {
+            text-align: center;
+            padding: 12px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .day-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .day-item.today {
+            border: 2px solid #ffdd44;
+            box-shadow: 0 0 20px rgba(255, 221, 68, 0.3);
+        }
+
+        .lunar-info {
+            margin-top: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lunar-fact {
+            font-size: 1rem;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .tide-info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .tide-item {
+            text-align: center;
+            color: #87ceeb;
+        }
+
+        .tide-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .tide-time {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .day-moon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .day-date {
+            font-size: 0.9rem;
+            color: #cccccc;
+            margin-bottom: 5px;
+        }
+
+        .day-phase {
+            font-size: 0.7rem;
+            color: #b0b0ff;
+            font-weight: 500;
+        }
+
+        .calendar-picker {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-picker:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .calendar-icon {
+            width: 30px;
+            height: 30px;
+            fill: #ffffff;
+        }
+
+        .date-input {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-input.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .left-panel, .right-panel {
+                padding: 20px;
+            }
+            
+            .moon-icon {
+                width: 150px;
+                height: 150px;
+                font-size: 90px;
+            }
+            
+            .date-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <div class="left-panel">
+            <div class="moon-display">
+                <h1 class="date-title" id="currentDate"></h1>
+                <div class="moon-icon" id="currentMoon"></div>
+                <div class="moon-phase-name" id="currentPhaseName"></div>
+                <div class="illumination" id="currentIllumination"></div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="next-10-days">
+                <h2 class="next-days-title">10-Day Moon Calendar</h2>
+                
+                <div class="section-label">Past 5 Days</div>
+                <div class="days-grid" id="pastDaysGrid"></div>
+                
+                <div class="section-label">Next 5 Days</div>
+                <div class="days-grid" id="futureDaysGrid"></div>
+                
+                <div class="lunar-info" id="lunarInfo">
+                    <div class="lunar-fact" id="moonFact"></div>
+                    <div class="tide-info">
+                        <div class="tide-item">
+                            <div class="tide-label">Next New Moon</div>
+                            <div class="tide-time" id="nextNewMoon"></div>
+                        </div>
+                        <div class="tide-item">
+                            <div class="tide-label">Next Full Moon</div>
+                            <div class="tide-time" id="nextFullMoon"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="calendar-picker" onclick="toggleDatePicker()">
+        <svg class="calendar-icon" viewBox="0 0 24 24">
+            <path d="M19,3H18V1H16V3H8V1H6V3H5C3.89,3 3,3.9 3,5V19C3,20.1 3.89,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V8H19V19Z"/>
+        </svg>
+    </div>
+    
+    <input type="date" class="date-input" id="dateInput" onchange="updateForSelectedDate()">
+
+    <script>
+        // Moon phase calculation functions
+        function getMoonPhase(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            // Julian day calculation
+            let a = Math.floor((14 - month) / 12);
+            let y = year - a;
+            let m = month + 12 * a - 3;
+            let jd = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) + 1721119.5;
+            
+            // Moon phase calculation
+            let daysSinceNewMoon = jd - 2451549.5; // Days since known new moon (Jan 6, 2000)
+            let newMoons = daysSinceNewMoon / 29.530588853; // Synodic month
+            let phase = (newMoons - Math.floor(newMoons)) * 29.530588853;
+            
+            return phase;
+        }
+        
+        function getMoonPhaseInfo(phase) {
+            const phaseNames = [
+                "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
+                "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
+            ];
+            
+            const moonEmojis = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
+            
+            let phaseIndex;
+            if (phase < 1) phaseIndex = 0;
+            else if (phase < 6.38264) phaseIndex = 1;
+            else if (phase < 8.38264) phaseIndex = 2;
+            else if (phase < 13.76529) phaseIndex = 3;
+            else if (phase < 15.76529) phaseIndex = 4;
+            else if (phase < 21.14794) phaseIndex = 5;
+            else if (phase < 23.14794) phaseIndex = 6;
+            else if (phase < 28.53059) phaseIndex = 7;
+            else phaseIndex = 0;
+            
+            const illumination = Math.round((1 - Math.abs(phase - 14.765294) / 14.765294) * 100);
+            
+            return {
+                name: phaseNames[phaseIndex],
+                emoji: moonEmojis[phaseIndex],
+                illumination: Math.max(0, Math.min(100, illumination))
+            };
+        }
+        
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+        
+        function formatShortDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+        
+        function updateMoonDisplay(date = new Date()) {
+            const phase = getMoonPhase(date);
+            const moonInfo = getMoonPhaseInfo(phase);
+            
+            document.getElementById('currentDate').textContent = formatDate(date);
+            document.getElementById('currentMoon').textContent = moonInfo.emoji;
+            document.getElementById('currentPhaseName').textContent = moonInfo.name;
+            document.getElementById('currentIllumination').textContent = `${moonInfo.illumination}% Illuminated`;
+            
+            updateNext7Days(date);
+        }
+        
+        function updateNext7Days(baseDate = new Date()) {
+            const pastDaysGrid = document.getElementById('pastDaysGrid');
+            const futureDaysGrid = document.getElementById('futureDaysGrid');
+            pastDaysGrid.innerHTML = '';
+            futureDaysGrid.innerHTML = '';
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Past 5 days
+            for (let i = 5; i >= 1; i--) {
+                const pastDate = new Date(baseDate);
+                pastDate.setDate(baseDate.getDate() - i);
+                
+                const phase = getMoonPhase(pastDate);
+                const moonInfo = getMoonPhaseInfo(phase);
+                
+                const dayItem = document.createElement('div');
+                dayItem.className = 'day-item';
+                
+                // Check if this is today
+                const checkDate = new Date(pastDate);
+                checkDate.setHours(0, 0, 0, 0);
+                if (checkDate.getTime() === today.getTime()) {
+                    dayItem.classList.add('today');
+                }
+                
+                dayItem.onclick = () => updateMoonDisplay(pastDate);
+                
+                dayItem.innerHTML = `
+                    <div class="day-date">${formatShortDate(pastDate)}</div>
+                    <div class="day-moon">${moonInfo.emoji}</div>
+                    <div class="day-phase">${moonInfo.name}</div>
+                `;
+                
+                pastDaysGrid.appendChild(dayItem);
+            }
+            
+            // Next 5 days
+            for (let i = 1; i <= 5; i++) {
+                const futureDate = new Date(baseDate);
+                futureDate.setDate(baseDate.getDate() + i);
+                
+                const phase = getMoonPhase(futureDate);
+                const moonInfo = getMoonPhaseInfo(phase);
+                
+                const dayItem = document.createElement('div');
+                dayItem.className = 'day-item';
+                dayItem.onclick = () => updateMoonDisplay(futureDate);
+                
+                dayItem.innerHTML = `
+                    <div class="day-date">${formatShortDate(futureDate)}</div>
+                    <div class="day-moon">${moonInfo.emoji}</div>
+                    <div class="day-phase">${moonInfo.name}</div>
+                `;
+                
+                futureDaysGrid.appendChild(dayItem);
+            }
+            
+            updateLunarInfo(baseDate);
+        }
+        
+        function updateLunarInfo(baseDate) {
+            const moonFacts = [
+                "The moon influences ocean tides through gravitational pull.",
+                "A lunar month lasts approximately 29.5 days.",
+                "The same side of the moon always faces Earth.",
+                "Moon phases affect wildlife behavior and plant growth.",
+                "The moon is moving away from Earth at 3.8cm per year.",
+                "Full moons appear 14% larger than new moons.",
+                "The moon's gravity affects the Earth's rotation speed.",
+                "Lunar eclipses can only occur during full moons.",
+                "The moon has no atmosphere or weather systems.",
+                "Moon phases have been used for farming for millennia."
+            ];
+            
+            const randomFact = moonFacts[Math.floor(Math.random() * moonFacts.length)];
+            document.getElementById('moonFact').textContent = randomFact;
+            
+            // Calculate next new and full moons
+            const nextNewMoon = findNextPhase(baseDate, 'new');
+            const nextFullMoon = findNextPhase(baseDate, 'full');
+            
+            document.getElementById('nextNewMoon').textContent = formatShortDate(nextNewMoon);
+            document.getElementById('nextFullMoon').textContent = formatShortDate(nextFullMoon);
+        }
+        
+        function findNextPhase(startDate, phaseType) {
+            let checkDate = new Date(startDate);
+            let found = false;
+            let iterations = 0;
+            
+            while (!found && iterations < 60) { // Prevent infinite loop
+                checkDate.setDate(checkDate.getDate() + 1);
+                const phase = getMoonPhase(checkDate);
+                const moonInfo = getMoonPhaseInfo(phase);
+                
+                if (phaseType === 'new' && moonInfo.name === 'New Moon') {
+                    found = true;
+                } else if (phaseType === 'full' && moonInfo.name === 'Full Moon') {
+                    found = true;
+                }
+                
+                iterations++;
+            }
+            
+            return checkDate;
+        }
+        
+        function toggleDatePicker() {
+            const dateInput = document.getElementById('dateInput');
+            dateInput.classList.toggle('visible');
+            if (dateInput.classList.contains('visible')) {
+                dateInput.focus();
+            }
+        }
+        
+        function updateForSelectedDate() {
+            const dateInput = document.getElementById('dateInput');
+            const selectedDate = new Date(dateInput.value);
+            if (!isNaN(selectedDate.getTime())) {
+                updateMoonDisplay(selectedDate);
+            }
+            dateInput.classList.remove('visible');
+        }
+        
+        // Create stars background
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const numStars = 100;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            updateMoonDisplay();
+            
+            // Set today's date as default in date picker
+            const today = new Date();
+            const dateInput = document.getElementById('dateInput');
+            dateInput.value = today.toISOString().split('T')[0];
+        });
+        
+        // Hide date picker when clicking outside
+        document.addEventListener('click', function(event) {
+            const dateInput = document.getElementById('dateInput');
+            const calendarPicker = document.querySelector('.calendar-picker');
+            
+            if (!dateInput.contains(event.target) && !calendarPicker.contains(event.target)) {
+                dateInput.classList.remove('visible');
+            }
+        });
+    </script>
+</body>
+</html>
