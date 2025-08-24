@@ -32,9 +32,6 @@ A beautiful, interactive web application that displays real-time moon phases wit
 ### Desktop View
 ![Desktop](./images/desktop.png)
 
-### Mobile View  
-![Mobile](./images/mobile.jpg)
-
 ---
 
 ⭐ **Star this repository if you find it helpful!** ⭐
