@@ -25,7 +25,7 @@ A beautiful, interactive web application that displays real-time moon phases wit
 
 ## 🚀 Live Demo
 
-[View Live Demo](your-github-pages-url-here) *(Replace with your GitHub Pages URL)*
+[View Live Demo](https://adwaithprasanth.github.io/lunar-calendar/)
 
 ## 📱 Screenshots
 
@@ -33,7 +33,7 @@ A beautiful, interactive web application that displays real-time moon phases wit
 ![Desktop](./images/desktop.png)
 
 ### Mobile View  
-*Add screenshot of mobile version*
+![Mobile](./images/mobile.jpg)
 
 ---
 
